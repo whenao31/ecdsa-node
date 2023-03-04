@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { signMessage } from "./scripts/CryptoFunctions";
 import server from "./server";
+import { toHex } from "ethereum-cryptography/utils"
 
-function Transfer({ address, setBalance }) {
+const TRANSACTION_MESSAGE = 'send funds transaction';
+
+function Transfer({ address, privateKey, setBalance }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
 
@@ -10,11 +14,15 @@ function Transfer({ address, setBalance }) {
   async function transfer(evt) {
     evt.preventDefault();
 
+    const [signedMessage, recoveryBit] = await signMessage(TRANSACTION_MESSAGE, privateKey);
+    
     try {
       const {
         data: { balance },
       } = await server.post(`send`, {
         sender: address,
+        signature: toHex(signedMessage),
+        recoverybit: recoveryBit,
         amount: parseInt(sendAmount),
         recipient,
       });

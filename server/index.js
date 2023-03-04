@@ -2,25 +2,34 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = 3042;
+const { recoverKey, getAddress } = require("../server/scripts/CryptoFunctions");
+const { toHex, hexToBytes } = require("ethereum-cryptography/utils");
 
 app.use(cors());
 app.use(express.json());
 
+const TRANSACTION_MESSAGE = 'send funds transaction';
+
 const balances = {
-  "0x1": 100,
-  "0x2": 50,
-  "0x3": 75,
+  "975382999d712bdeed4bf10480536294899c2064": 100,
+  "4a62aa7a68fa1e8264dd46b121f3edb131c4a7b3": 50,
+  "2ccdaa4afad4b334280995fcf7d47ad5884185b8": 75,
 };
 
-app.get("/balance/:address", (req, res) => {
+app.get("/balance/:address", async (req, res) => {
   const { address } = req.params;
   const balance = balances[address] || 0;
   res.send({ balance });
 });
 
-app.post("/send", (req, res) => {
-  const { sender, recipient, amount } = req.body;
+app.post("/send", async (req, res) => {
+  
+  const { signature, recoverybit, recipient, amount } = req.body;
 
+  // Recover the sender's public key from client-side sent message with signature
+  const recovered = await recoverKey(TRANSACTION_MESSAGE, hexToBytes(signature), recoverybit);
+  // Get the sender address from the public key
+  const sender = toHex(getAddress(recovered));
   setInitialBalance(sender);
   setInitialBalance(recipient);
 
