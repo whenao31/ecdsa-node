@@ -33,9 +33,9 @@ function UserGen( { keyPairs, setKeyPairs } ) {
           }
           </ul>
         {/* <div> */}
-          <form onSubmit={genUser}>
+          {/* <form onSubmit={genUser}>
             <input type="submit" className="button" value="Gen User" />
-          </form>
+          </form> */}
         {/* </div> */}
       </div>
     </>

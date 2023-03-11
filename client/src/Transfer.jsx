@@ -27,6 +27,8 @@ function Transfer({ address, privateKey, setBalance }) {
         recipient,
       });
       setBalance(balance);
+      setSendAmount(0);
+      setRecipient("");
     } catch (ex) {
       alert(ex.response.data.message);
     }

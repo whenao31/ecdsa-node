@@ -1,6 +1,4 @@
 import server from "./server";
-
-import * as secp from "ethereum-cryptography/secp256k1"
 import { toHex } from "ethereum-cryptography/utils"
 import { useState } from "react";
 import { getAddress } from "./scripts/CryptoFunctions";
@@ -11,9 +9,13 @@ function Wallet({ address, setAddress, balance, setBalance, setPrivateKey, keyPa
 
   async function onChange(evt) {
     const username = evt.target.value;
-    if(!username) return false;
+    
     setUsername(username);
-
+    if(!username || !(username.split("_").length > 2)){
+      setAddress("");
+      setBalance(0);
+      return false;
+    };
     const userKeyPair = keyPairs.filter( keyPair => keyPair.shortName === username )[0];
 
     const address = toHex(getAddress(userKeyPair.genPublicKey));
